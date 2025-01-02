@@ -13,6 +13,7 @@ pip install git+https://github.com/patrickerich/regtool.git
 
 ## Status
 This project is in an early stage of development.
+It is very likely that it does not work properly yet!!
  
 
 ## Usage
