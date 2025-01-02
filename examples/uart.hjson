@@ -1,0 +1,48 @@
+{
+  name: "uart",
+  regwidth: 32,
+  one_line_desc: "Universal Asynchronous Receiver/Transmitter",
+  one_paragraph_desc: '''
+    UART peripheral with configurable baud rate, optional parity,
+    and FIFO buffers for transmit and receive.
+  ''',
+  
+  registers: [
+    {
+      name: "CTRL",
+      desc: "Control Register",
+      swaccess: "rw",
+      offset: "0x00",
+      fields: [
+        {
+          bits: "0",
+          name: "TX_EN",
+          desc: "Transmitter Enable"
+        },
+        {
+          bits: "1",
+          name: "RX_EN",
+          desc: "Receiver Enable"
+        }
+      ]
+    },
+    {
+      name: "STATUS",
+      desc: "Status Register",
+      swaccess: "ro",
+      offset: "0x04",
+      fields: [
+        {
+          bits: "0",
+          name: "TX_FULL",
+          desc: "TX FIFO Full"
+        },
+        {
+          bits: "1",
+          name: "RX_EMPTY",
+          desc: "RX FIFO Empty"
+        }
+      ]
+    }
+  ]
+}

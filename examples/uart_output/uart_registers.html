@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UART Register Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f5f5f5; }
+        h1, h2, h3 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>UART Register Documentation</h1>
+    <p>Universal Asynchronous Receiver/Transmitter</p>
+
+    <h2>Register Map</h2>
+    <table>
+        <tr><th>Offset</th><th>Name</th><th>Description</th></tr>
+        <tr>
+            <td>0x00</td>
+            <td>CTRL</td>
+            <td>Control Register</td>
+        </tr>
+        <tr>
+            <td>0x04</td>
+            <td>STATUS</td>
+            <td>Status Register</td>
+        </tr>
+    </table>
+
+    <h2>Register Details</h2>
+    <h3>CTRL (0x00)</h3>
+    <p>Control Register</p>
+    <table>
+        <tr><th>Bits</th><th>Name</th><th>Access</th><th>Description</th></tr>
+        <tr>
+            <td>0</td>
+            <td>TX_EN</td>
+            <td>rw</td>
+            <td>Transmitter Enable</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>RX_EN</td>
+            <td>rw</td>
+            <td>Receiver Enable</td>
+        </tr>
+    </table>
+    <h3>STATUS (0x04)</h3>
+    <p>Status Register</p>
+    <table>
+        <tr><th>Bits</th><th>Name</th><th>Access</th><th>Description</th></tr>
+        <tr>
+            <td>0</td>
+            <td>TX_FULL</td>
+            <td>ro</td>
+            <td>TX FIFO Full</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>RX_EMPTY</td>
+            <td>ro</td>
+            <td>RX FIFO Empty</td>
+        </tr>
+    </table>
+</body>
+</html>
