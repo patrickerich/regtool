@@ -13,4 +13,4 @@ dependencies = [
 ]
 
 [project.scripts]
-reggen = "regtool.reggen:main"
+regtool = "regtool.cli:main"
