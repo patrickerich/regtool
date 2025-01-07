@@ -5,8 +5,8 @@ Universal Asynchronous Receiver/Transmitter
 
 | Offset | Name | Description |
 |--------|------|-------------|
-| 0x00 | CTRL | Control Register |
-| 0x04 | STATUS | Status Register |
+| 0x0 | CTRL | Control Register |
+| 0x4 | STATUS | Status Register |
 
 
 Control Register

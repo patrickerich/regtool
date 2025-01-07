@@ -1,23 +1,20 @@
 from pathlib import Path
 from mako.template import Template
-from regtool.parser.hjson_parser import HjsonParser
 import importlib.resources as pkg_resources
+from regtool.generators.base import RegisterGenerator
 
-def generate_uvm(reg_spec: str, output_dir: Path) -> None:
-    parser = HjsonParser(reg_spec)
-    registers = parser.get_registers()
-    block_info = parser.get_block_info()
+class UVMGenerator(RegisterGenerator):
+    def generate(self):
+        with pkg_resources.files('regtool.templates.uvm').joinpath('reg_pkg.sv.tpl').open('r') as template_file:
+            template_content = template_file.read()
 
-    with pkg_resources.files('regtool.templates.uvm').joinpath('reg_pkg.sv.tpl').open('r') as template_file:
-        template_content = template_file.read()
+        template = Template(template_content)
+        uvm = template.render(
+            name=self.block_info['name'],
+            registers=self.registers,
+            reg_aw=self.block_info['reg_aw'],
+            reg_dw=self.block_info['reg_dw']
+        )
 
-    template = Template(template_content)
-
-    uvm = template.render(
-        name=block_info['name'],
-        registers=registers,
-        regwidth=block_info['regwidth']
-    )
-
-    output_file = output_dir / f"{block_info['name']}_reg_pkg.sv"
-    output_file.write_text(uvm)
+        output_file = self.output_dir / f"{self.block_info['name']}_reg_pkg.sv"
+        output_file.write_text(uvm)

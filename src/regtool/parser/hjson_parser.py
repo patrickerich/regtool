@@ -66,6 +66,7 @@ class HjsonParser:
         return {
             'name': self.raw_spec['name'],
             'version': self.raw_spec.get('version', '1.0.0'),
-            'regwidth': self.raw_spec.get('regwidth', 32),
+            'reg_aw': self.raw_spec.get('reg_aw', 32),
+            'reg_dw': self.raw_spec.get('reg_dw', 32),
             'desc': self.raw_spec.get('one_line_desc', '')
         }

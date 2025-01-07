@@ -17,7 +17,7 @@ package ${name}_reg_pkg;
 
     virtual function void build();
       // Create default map
-      default_map = create_map("default_map", 0, ${regwidth}/8, UVM_LITTLE_ENDIAN);
+      default_map = create_map("default_map", 0, ${reg_dw}/8, UVM_LITTLE_ENDIAN);
       
 % for register in registers:
       // Build ${register.name}
@@ -40,13 +40,13 @@ package ${name}_reg_pkg;
 % endfor
 
     function new(string name = "${register.name.lower()}_reg_c");
-      super.new(name, ${regwidth}, UVM_NO_COVERAGE);
+      super.new(name, ${reg_dw}, UVM_NO_COVERAGE);
     endfunction
 
     virtual function void build();
 % for field in register.fields:
       ${field.name.lower()} = uvm_reg_field::type_id::create("${field.name.lower()}");
-      ${field.name.lower()}.configure(this, ${field.width}, ${field.lsb}, "${register.swaccess}", 0, ${regwidth}'h${"%x" % (field.reset if field.reset is not None else 0)}, 1, 1, 1);
+      ${field.name.lower()}.configure(this, ${field.width}, ${field.lsb}, "${register.swaccess}", 0, ${reg_dw}'h${"%x" % (field.reset if field.reset is not None else 0)}, 1, 1, 1);
 % endfor
     endfunction
   endclass

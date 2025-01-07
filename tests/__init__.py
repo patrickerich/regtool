@@ -1,1 +1,0 @@
-"""Register Tool test suite"""

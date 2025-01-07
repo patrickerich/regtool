@@ -1,6 +1,7 @@
 {
   name: "uart",
-  regwidth: 32,
+  reg_aw: 32,
+  reg_dw: 32,
   one_line_desc: "Universal Asynchronous Receiver/Transmitter",
   one_paragraph_desc: '''
     UART peripheral with configurable baud rate, optional parity,
