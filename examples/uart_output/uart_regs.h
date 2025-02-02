@@ -16,12 +16,10 @@ extern "C" {
 #define UART_CTRL_TX_EN_SHIFT 0
 #define UART_CTRL_RX_EN_MASK 0x1
 #define UART_CTRL_RX_EN_SHIFT 1
-
 #define UART_STATUS_TX_FULL_MASK 0x1
 #define UART_STATUS_TX_FULL_SHIFT 0
 #define UART_STATUS_RX_EMPTY_MASK 0x1
 #define UART_STATUS_RX_EMPTY_SHIFT 1
-
 
 // Register access macros
 #define REG_READ32(addr) (*(volatile uint32_t *)(addr))

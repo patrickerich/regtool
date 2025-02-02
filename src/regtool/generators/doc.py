@@ -1,15 +1,17 @@
 from pathlib import Path
-from mako.template import Template
+from jinja2 import Environment
 import importlib.resources as pkg_resources
 from regtool.parser.hjson_parser import HjsonParser
 from regtool.generators.base import RegisterGenerator
 
 class MarkdownGenerator(RegisterGenerator):
     def generate(self):
-        with pkg_resources.files('regtool.templates.doc').joinpath('registers.md.tpl').open('r') as template_file:
-            template_content = template_file.read()
-
-        template = Template(template_content)
+        template_path = pkg_resources.files('regtool.templates.doc').joinpath('registers.md.tpl')
+        with template_path.open('r') as f:
+            template_content = f.read()
+            
+        env = Environment(trim_blocks=True, lstrip_blocks=True)
+        template = env.from_string(template_content)
         md = template.render(
             name=self.block_info['name'],
             desc=self.block_info['desc'],
@@ -21,10 +23,12 @@ class MarkdownGenerator(RegisterGenerator):
 
 class HTMLGenerator(RegisterGenerator):
     def generate(self):
-        with pkg_resources.files('regtool.templates.doc').joinpath('registers.html.tpl').open('r') as template_file:
-            template_content = template_file.read()
-
-        template = Template(template_content)
+        template_path = pkg_resources.files('regtool.templates.doc').joinpath('registers.html.tpl')
+        with template_path.open('r') as f:
+            template_content = f.read()
+            
+        env = Environment(trim_blocks=True, lstrip_blocks=True)
+        template = env.from_string(template_content)
         html = template.render(
             name=self.block_info['name'],
             desc=self.block_info['desc'],

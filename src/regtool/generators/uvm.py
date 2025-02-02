@@ -1,14 +1,16 @@
 from pathlib import Path
-from mako.template import Template
+from jinja2 import Environment
 import importlib.resources as pkg_resources
 from regtool.generators.base import RegisterGenerator
 
 class UVMGenerator(RegisterGenerator):
     def generate(self):
-        with pkg_resources.files('regtool.templates.uvm').joinpath('reg_pkg.sv.tpl').open('r') as template_file:
-            template_content = template_file.read()
-
-        template = Template(template_content)
+        template_path = pkg_resources.files('regtool.templates.uvm').joinpath('reg_pkg.sv.tpl')
+        with template_path.open('r') as f:
+            template_content = f.read()
+            
+        env = Environment(trim_blocks=True, lstrip_blocks=True)
+        template = env.from_string(template_content)
         uvm = template.render(
             name=self.block_info['name'],
             registers=self.registers,
