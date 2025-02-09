@@ -16,26 +16,27 @@ module ${name}_reg_block #(
     output logic [DW-1:0]    reg_rdata_o,
     output logic             reg_error_o,
     
-    // Memory interfaces
-% for memory in memories:
-    // ${memory.name} interface
-    output logic            ${memory.name.lower()}_cs_o,
-    output logic            ${memory.name.lower()}_we_o,
-    output logic [AW-1:0]   ${memory.name.lower()}_addr_o,
-    output logic [${memory.width}-1:0] ${memory.name.lower()}_wdata_o,
-    input  logic [${memory.width}-1:0] ${memory.name.lower()}_rdata_i,
+    // External register interfaces
+% for register in registers:
+% if register.get('is_external', False):
+    // ${register.name} external interface
+    output logic            ${register.name.lower()}_req_o,
+    output logic            ${register.name.lower()}_we_o,
+    output logic [DW-1:0]   ${register.name.lower()}_wdata_o,
+    input  logic [DW-1:0]   ${register.name.lower()}_rdata_i,
+    input  logic            ${register.name.lower()}_ack_i,
+% endif
 % endfor
 );
 
-    // Memory region decode
-% for memory in memories:
-    assign ${memory.name.lower()}_cs_o = (reg_addr_i >= 'h${"%x" % memory.offset} && 
-                                         reg_addr_i < 'h${"%x" % (memory.offset + memory.size * (memory.width//8))});
-    assign ${memory.name.lower()}_we_o = ${memory.name.lower()}_cs_o && reg_we_i;
-    assign ${memory.name.lower()}_addr_o = reg_addr_i - 'h${"%x" % memory.offset};
-    assign ${memory.name.lower()}_wdata_o = reg_wdata_i;
-% endfor
-{% for register in registers %}
+    // External register access
+% for register in registers:
+% if register.get('is_external', False):
+    assign ${register.name.lower()}_req_o = (reg_addr_i == 'h${"%x" % register.offset});
+    assign ${register.name.lower()}_we_o = ${register.name.lower()}_req_o && reg_we_i;
+    assign ${register.name.lower()}_wdata_o = reg_wdata_i;
+% endif
+% endfor{% for register in registers %}
     // {{ register.name }} Register
     logic [DW-1:0] {{ register.name|lower }}_q;
     {% if register.swaccess == "rw" %}

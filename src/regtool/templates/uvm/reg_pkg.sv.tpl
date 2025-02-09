@@ -11,11 +11,6 @@ package ${name}_reg_pkg;
     rand ${register.name.lower()}_reg_c ${register.name.lower()};
 % endfor
 
-% for memory in memories:
-    // ${memory.name} Memory
-    rand uvm_mem ${memory.name.lower()};
-% endfor
-
     function new(string name = "${name}_reg_block");
       super.new(name);
     endfunction
@@ -28,14 +23,10 @@ package ${name}_reg_pkg;
       ${register.name.lower()} = ${register.name.lower()}_reg_c::type_id::create("${register.name.lower()}");
       ${register.name.lower()}.configure(this, null, "");
       ${register.name.lower()}.build();
-      default_map.add_reg(${register.name.lower()}, 'h${"%x"|format(register.offset)});
-% endfor
-
-% for memory in memories:
-      // Build ${memory.name}
-      ${memory.name.lower()} = new("${memory.name.lower()}", ${memory.size}, ${memory.width});
-      ${memory.name.lower()}.configure(this);
-      default_map.add_mem(${memory.name.lower()}, 'h${"%x" % memory.offset});
+% if register.get('is_external', False):
+      ${register.name.lower()}.set_external(1);
+% endif
+      default_map.add_reg(${register.name.lower()}, 'h${"%x" % register.offset});
 % endfor
     endfunction
   endclass

@@ -14,17 +14,15 @@ extern "C" {
 #define REG_ACCESS_W1C  3
 #define REG_ACCESS_W1S  4
 
-// Register offsets
+// Register types
+#define REG_TYPE_INTERNAL 0
+#define REG_TYPE_EXTERNAL 1
+
+// Register offsets and types
 % for register in registers:
-% if register.get('is_array', False):
-#define ${name.upper()}_${register.name}_ARRAY_OFFSET 0x${"%x" % register.offset}
-#define ${name.upper()}_${register.name}_STRIDE 0x${"%x" % register.array_stride}
-#define ${name.upper()}_${register.name}_COUNT ${register.array_size}
-#define ${name.upper()}_${register.name}_ACCESS REG_ACCESS_${register.swaccess.upper()}
-% else:
 #define ${name.upper()}_${register.name}_OFFSET 0x${"%x" % register.offset}
+#define ${name.upper()}_${register.name}_TYPE REG_TYPE_${"EXTERNAL" if register.get('is_external', False) else "INTERNAL"}
 #define ${name.upper()}_${register.name}_ACCESS REG_ACCESS_${register.swaccess.upper()}
-% endif
 % endfor
 
 // Memory region definitions

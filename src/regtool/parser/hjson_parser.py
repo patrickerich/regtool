@@ -19,10 +19,11 @@ class HjsonParser(RegisterParser):
                 'name': reg['name'],
                 'desc': reg.get('desc', ''),
                 'offset': reg['offset'],
-                'swaccess': reg.get('swaccess', 'rw'),  # Supports: rw, ro, wo, w1c, w1s
+                'swaccess': reg.get('swaccess', 'rw'),
                 'is_array': reg.get('is_array', False),
                 'array_size': reg.get('array_size', 1),
                 'array_stride': reg.get('array_stride', 4),
+                'is_external': reg.get('external', False),
                 'fields': []
             }
             

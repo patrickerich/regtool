@@ -1,5 +1,4 @@
 from systemrdl import RDLCompiler, RDLListener, RDLWalker, WalkerAction
-from systemrdl.node import Node
 from regtool.parser.base import RegisterParser
 
 class RDLParser(RegisterParser):
@@ -36,10 +35,11 @@ class RegisterExtractor(RDLListener):
                     'name': node.inst_name.split('[')[0],
                     'desc': node.get_property('desc') or '',
                     'offset': node.absolute_address,
-                    'swaccess': node.get_property('sw').name,  # Get actual access type
+                    'swaccess': 'rw',
                     'is_array': True,
                     'array_size': node.array_dimensions[0],
                     'array_stride': node.array_stride,
+                    'is_external': not node.get_property('ispresent'),
                     'fields': []
                 }
                 self._add_fields(node, register)
@@ -51,6 +51,7 @@ class RegisterExtractor(RDLListener):
                 'offset': node.absolute_address,
                 'swaccess': 'rw',
                 'is_array': False,
+                'is_external': not node.get_property('ispresent'),
                 'fields': []
             }
             self._add_fields(node, register)
@@ -65,17 +66,5 @@ class RegisterExtractor(RDLListener):
                 'lsb': field.lsb,
                 'msb': field.msb,
                 'width': field.msb - field.lsb + 1,
-                'reset': 0
+                'reset': field.get_property('reset') or 0
             })
-
-    def enter_Mem(self, node):
-        memory = {
-            'name': node.inst_name,
-            'desc': node.get_property('desc') or '',
-            'offset': node.absolute_address,
-            'size': node.get_property('mementries'),
-            'width': node.get_property('memwidth'),
-            'type': 'mem'
-        }
-        self.memories.append(memory)
-        return WalkerAction.Continue
