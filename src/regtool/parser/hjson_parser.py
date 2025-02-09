@@ -1,19 +1,5 @@
-from typing import Dict, List, Optional
-from dataclasses import dataclass
-from pathlib import Path
 import hjson
 from regtool.parser.base import RegisterParser
-from .reg_model import RegisterModel, BitField
-
-@dataclass
-class RegisterSpec:
-    """Register specification from HJSON"""
-    name: str
-    desc: str
-    offset: str
-    swaccess: str
-    hwaccess: str
-    fields: List[Dict]
 
 class HjsonParser(RegisterParser):
     def parse(self):
@@ -23,39 +9,45 @@ class HjsonParser(RegisterParser):
         self.block_info = {
             'name': data['name'],
             'desc': data.get('desc', ''),
-            'reg_aw': data.get('reg_aw', 8),
+            'reg_aw': data.get('reg_aw', 32),
             'reg_dw': data.get('reg_dw', 32)
         }
         
-        self.registers = data['registers']
+        self.registers = []
+        for reg in data['registers']:
+            register = {
+                'name': reg['name'],
+                'desc': reg.get('desc', ''),
+                'offset': reg['offset'],
+                'swaccess': reg.get('swaccess', 'rw'),  # Supports: rw, ro, wo, w1c, w1s
+                'is_array': reg.get('is_array', False),
+                'array_size': reg.get('array_size', 1),
+                'array_stride': reg.get('array_stride', 4),
+                'fields': []
+            }
+            
+            for field in reg['fields']:
+                register['fields'].append({
+                    'name': field['name'],
+                    'desc': field.get('desc', ''),
+                    'lsb': field['lsb'],
+                    'msb': field['msb'],
+                    'width': field['msb'] - field['lsb'] + 1,
+                    'reset': field.get('reset', 0)
+                })
+                
+            self.registers.append(register)
+            
+        self.memories = []
+        for mem in data.get('memories', []):
+            memory = {
+                'name': mem['name'],
+                'desc': mem.get('desc', ''),
+                'offset': mem['offset'],
+                'size': mem['size'],
+                'width': mem['width'],
+                'type': 'mem'
+            }
+            self.memories.append(memory)
+            
         return self.block_info, self.registers
-
-    def parse_register(self, reg_dict: Dict) -> RegisterModel:
-        """Parse single register definition into RegisterModel"""
-        fields = []
-        for field in reg_dict['fields']:
-            if ':' in field['bits']:
-                msb, lsb = map(int, field['bits'].split(':'))
-            else:
-                msb = lsb = int(field['bits'])
-            
-            fields.append(BitField(
-                name=field['name'],
-                msb=msb,
-                lsb=lsb,
-                desc=field.get('desc', ''),
-                reset=field.get('reset')
-            ))
-            
-        return RegisterModel(
-            name=reg_dict['name'],
-            offset=int(reg_dict['offset'], 16),
-            desc=reg_dict.get('desc', ''),
-            fields=fields,
-            swaccess=reg_dict.get('swaccess', 'rw'),
-            hwaccess=reg_dict.get('hwaccess', 'hro')
-        )
-        
-    def get_registers(self) -> List[RegisterModel]:
-        """Get list of all registers"""
-        return [self.parse_register(reg) for reg in self.registers]

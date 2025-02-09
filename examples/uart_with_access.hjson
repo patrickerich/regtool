@@ -1,0 +1,33 @@
+{
+    name: "uart"
+    registers: [
+        {
+            name: "STATUS"
+            desc: "Status Register"
+            offset: 0x04
+            swaccess: "ro"  # Read-only register
+            fields: [
+                {
+                    name: "BUSY"
+                    desc: "UART Busy Status"
+                    lsb: 0
+                    msb: 0
+                }
+            ]
+        }
+        {
+            name: "IRQ_STATUS"
+            desc: "Interrupt Status"
+            offset: 0x08
+            swaccess: "w1c"  # Write-1-to-clear
+            fields: [
+                {
+                    name: "RX_FULL"
+                    desc: "RX FIFO Full Interrupt"
+                    lsb: 0
+                    msb: 0
+                }
+            ]
+        }
+    ]
+}

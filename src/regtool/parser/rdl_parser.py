@@ -17,7 +17,6 @@ class RDLParser(RegisterParser):
             'reg_dw': 32
         }
         
-        # Walk register nodes and build register list
         walker = RDLWalker()
         listener = RegisterExtractor()
         walker.walk(top_node, listener)
@@ -31,14 +30,34 @@ class RegisterExtractor(RDLListener):
         self.registers = []
 
     def enter_Reg(self, node):
-        register = {
-            'name': node.inst_name,
-            'desc': node.get_property('desc') or '',
-            'offset': node.absolute_address,
-            'swaccess': 'rw',  # Default access mode
-            'fields': []
-        }
-        
+        if node.is_array:
+            if node.array_index == 0:
+                register = {
+                    'name': node.inst_name.split('[')[0],
+                    'desc': node.get_property('desc') or '',
+                    'offset': node.absolute_address,
+                    'swaccess': node.get_property('sw').name,  # Get actual access type
+                    'is_array': True,
+                    'array_size': node.array_dimensions[0],
+                    'array_stride': node.array_stride,
+                    'fields': []
+                }
+                self._add_fields(node, register)
+                self.registers.append(register)
+        else:
+            register = {
+                'name': node.inst_name,
+                'desc': node.get_property('desc') or '',
+                'offset': node.absolute_address,
+                'swaccess': 'rw',
+                'is_array': False,
+                'fields': []
+            }
+            self._add_fields(node, register)
+            self.registers.append(register)
+        return WalkerAction.Continue
+
+    def _add_fields(self, node, register):
         for field in node.fields():
             register['fields'].append({
                 'name': field.inst_name,
@@ -46,8 +65,17 @@ class RegisterExtractor(RDLListener):
                 'lsb': field.lsb,
                 'msb': field.msb,
                 'width': field.msb - field.lsb + 1,
-                'reset': 0  # Default reset value
+                'reset': 0
             })
-            
-        self.registers.append(register)
+
+    def enter_Mem(self, node):
+        memory = {
+            'name': node.inst_name,
+            'desc': node.get_property('desc') or '',
+            'offset': node.absolute_address,
+            'size': node.get_property('mementries'),
+            'width': node.get_property('memwidth'),
+            'type': 'mem'
+        }
+        self.memories.append(memory)
         return WalkerAction.Continue

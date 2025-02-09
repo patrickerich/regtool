@@ -1,0 +1,42 @@
+{
+    name: "uart"
+    desc: "UART peripheral registers"
+    reg_aw: 32
+    reg_dw: 32
+    
+    registers: [
+        {
+            name: "CTRL"
+            desc: "Control Register"
+            offset: 0x00
+            swaccess: "rw"
+            fields: [
+                {
+                    name: "EN"
+                    desc: "UART Enable"
+                    lsb: 0
+                    msb: 0
+                    reset: 0
+                }
+            ]
+        }
+        {
+            name: "FIFO"
+            desc: "FIFO Data Registers"
+            offset: 0x100
+            swaccess: "rw"
+            is_array: true
+            array_size: 8
+            array_stride: 4
+            fields: [
+                {
+                    name: "DATA"
+                    desc: "FIFO Data"
+                    lsb: 0
+                    msb: 7
+                    reset: 0
+                }
+            ]
+        }
+    ]
+}
