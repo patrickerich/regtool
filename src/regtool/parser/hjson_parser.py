@@ -19,6 +19,7 @@ class HjsonParser(RegisterParser):
                 'name': reg['name'],
                 'desc': reg.get('desc', ''),
                 'offset': reg['offset'],
+                'aliases': reg.get('aliases', []),
                 'swaccess': reg.get('swaccess', 'rw'),
                 'is_array': reg.get('is_array', False),
                 'array_size': reg.get('array_size', 1),
@@ -28,27 +29,24 @@ class HjsonParser(RegisterParser):
             }
             
             for field in reg['fields']:
+                # Support both bit range and individual bits
+                if 'bits' in field:
+                    bits = field['bits'].split(':')
+                    msb = int(bits[0])
+                    lsb = int(bits[1]) if len(bits) > 1 else msb
+                else:
+                    msb = field.get('msb', field.get('bit', 0))
+                    lsb = field.get('lsb', field.get('bit', 0))
+
                 register['fields'].append({
                     'name': field['name'],
                     'desc': field.get('desc', ''),
-                    'lsb': field['lsb'],
-                    'msb': field['msb'],
-                    'width': field['msb'] - field['lsb'] + 1,
+                    'lsb': lsb,
+                    'msb': msb,
+                    'width': msb - lsb + 1,
                     'reset': field.get('reset', 0)
                 })
                 
             self.registers.append(register)
-            
-        self.memories = []
-        for mem in data.get('memories', []):
-            memory = {
-                'name': mem['name'],
-                'desc': mem.get('desc', ''),
-                'offset': mem['offset'],
-                'size': mem['size'],
-                'width': mem['width'],
-                'type': 'mem'
-            }
-            self.memories.append(memory)
             
         return self.block_info, self.registers

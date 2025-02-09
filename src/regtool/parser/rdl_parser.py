@@ -35,6 +35,7 @@ class RegisterExtractor(RDLListener):
                     'name': node.inst_name.split('[')[0],
                     'desc': node.get_property('desc') or '',
                     'offset': node.absolute_address,
+                    'aliases': getattr(node, 'aliases', []),  # Using getattr instead
                     'swaccess': 'rw',
                     'is_array': True,
                     'array_size': node.array_dimensions[0],
@@ -49,6 +50,7 @@ class RegisterExtractor(RDLListener):
                 'name': node.inst_name,
                 'desc': node.get_property('desc') or '',
                 'offset': node.absolute_address,
+                'aliases': getattr(node, 'aliases', []),  # Using getattr instead
                 'swaccess': 'rw',
                 'is_array': False,
                 'is_external': not node.get_property('ispresent'),
@@ -57,7 +59,7 @@ class RegisterExtractor(RDLListener):
             self._add_fields(node, register)
             self.registers.append(register)
         return WalkerAction.Continue
-
+    
     def _add_fields(self, node, register):
         for field in node.fields():
             register['fields'].append({

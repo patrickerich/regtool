@@ -45,14 +45,32 @@ module ${name}_reg_block #(
     
 {% endfor %}
 
-    // Register write enables
-{% for register in registers %}
-    {% if register.swaccess == "rw" %}
-    assign {{ register.name|lower }}_we = reg_we_i && (reg_addr_i == 'h{{ "%x"|format(register.offset) }});
-    {% endif %}
-{% endfor %}
+    // Register read logic
+    always_comb begin
+        reg_rdata_o = '0;
+        reg_error_o = 1'b0;
+        
+        case (reg_addr_i)
+% for register in registers:
+            'h${"%x" % register.offset}: reg_rdata_o = ${register.name.lower()}_q;
+% for alias in register.get('aliases', []):
+            'h${"%x" % alias}: reg_rdata_o = ${register.name.lower()}_q;  // Alias
+% endfor
+% endfor
+            default: reg_error_o = 1'b1;
+        endcase
+    end
 
-    // Sequential write logic
+    // Register write enables
+% for register in registers:
+    % if register.swaccess == 'rw':
+    assign ${register.name.lower()}_we = reg_we_i && (reg_addr_i == 'h${"%x" % register.offset}
+% for alias in register.get('aliases', []):
+                                        || reg_addr_i == 'h${"%x" % alias}
+% endfor
+                                        );
+    % endif
+% endfor    // Sequential write logic
 % for register in registers:
     % if register.swaccess in ['rw', 'w1c', 'w1s']:
     always_ff @(posedge clk_i or negedge rst_ni) begin

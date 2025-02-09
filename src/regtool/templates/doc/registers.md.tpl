@@ -4,10 +4,10 @@ ${desc}
 
 ## Register Map
 
-| Offset | Name | Type | Description |
-|--------|------|------|-------------|
+| Offset | Name | Description | Aliases |
+|--------|------|-------------|---------|
 % for register in registers:
-| 0x${"%x" % register.offset} | ${register.name} | ${"External" if register.get('is_external', False) else "Internal"} | ${register.desc} |
+| 0x${"%x" % register.offset} | ${register.name} | ${register.desc} | ${', '.join(['0x%x' % a for a in register.get('aliases', [])])} |
 % endfor
 
 ## Memory Regions

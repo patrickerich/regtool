@@ -18,11 +18,12 @@ extern "C" {
 #define REG_TYPE_INTERNAL 0
 #define REG_TYPE_EXTERNAL 1
 
-// Register offsets and types
+// Register offsets and aliases
 % for register in registers:
 #define ${name.upper()}_${register.name}_OFFSET 0x${"%x" % register.offset}
-#define ${name.upper()}_${register.name}_TYPE REG_TYPE_${"EXTERNAL" if register.get('is_external', False) else "INTERNAL"}
-#define ${name.upper()}_${register.name}_ACCESS REG_ACCESS_${register.swaccess.upper()}
+% for idx, alias in enumerate(register.get('aliases', [])):
+#define ${name.upper()}_${register.name}_ALIAS${idx}_OFFSET 0x${"%x" % alias}
+% endfor
 % endfor
 
 // Memory region definitions

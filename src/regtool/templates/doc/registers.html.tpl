@@ -16,13 +16,13 @@
 
     <h2>Register Map</h2>
     <table>
-        <tr><th>Offset</th><th>Name</th><th>Type</th><th>Description</th></tr>
+        <tr><th>Offset</th><th>Name</th><th>Description</th><th>Aliases</th></tr>
 % for register in registers:
         <tr>
             <td>0x${"%x" % register.offset}</td>
             <td>${register.name}</td>
-            <td>${"External" if register.get('is_external', False) else "Internal"}</td>
             <td>${register.desc}</td>
+            <td>${', '.join(['0x%x' % a for a in register.get('aliases', [])])}</td>
         </tr>
 % endfor
     </table>

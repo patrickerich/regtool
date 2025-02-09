@@ -23,12 +23,11 @@ package ${name}_reg_pkg;
       ${register.name.lower()} = ${register.name.lower()}_reg_c::type_id::create("${register.name.lower()}");
       ${register.name.lower()}.configure(this, null, "");
       ${register.name.lower()}.build();
-% if register.get('is_external', False):
-      ${register.name.lower()}.set_external(1);
-% endif
       default_map.add_reg(${register.name.lower()}, 'h${"%x" % register.offset});
+% for alias in register.get('aliases', []):
+      default_map.add_reg(${register.name.lower()}, 'h${"%x" % alias});  // Alias
 % endfor
-    endfunction
+% endfor    endfunction
   endclass
 
 % for register in registers:
