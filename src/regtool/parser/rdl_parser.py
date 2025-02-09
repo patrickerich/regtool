@@ -41,6 +41,7 @@ class RegisterExtractor(RDLListener):
                     'array_size': node.array_dimensions[0],
                     'array_stride': node.array_stride,
                     'is_external': not node.get_property('ispresent'),
+                    'reset_value': self._get_reset_value(node),
                     'fields': []
                 }
                 self._add_fields(node, register)
@@ -54,6 +55,7 @@ class RegisterExtractor(RDLListener):
                 'swaccess': 'rw',
                 'is_array': False,
                 'is_external': not node.get_property('ispresent'),
+                'reset_value': self._get_reset_value(node),
                 'fields': []
             }
             self._add_fields(node, register)
@@ -68,5 +70,11 @@ class RegisterExtractor(RDLListener):
                 'lsb': field.lsb,
                 'msb': field.msb,
                 'width': field.msb - field.lsb + 1,
-                'reset': field.get_property('reset') or 0
+                'reset': self._get_reset_value(field)
             })
+
+    def _get_reset_value(self, node):
+        try:
+            return node.get_property('reset') or 0
+        except LookupError:
+            return 0

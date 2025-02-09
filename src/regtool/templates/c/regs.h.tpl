@@ -7,30 +7,22 @@ extern "C" {
 
 #include <stdint.h>
 
-// Access type definitions
-#define REG_ACCESS_RW   0
-#define REG_ACCESS_RO   1
-#define REG_ACCESS_WO   2
-#define REG_ACCESS_W1C  3
-#define REG_ACCESS_W1S  4
-
-// Register types
-#define REG_TYPE_INTERNAL 0
-#define REG_TYPE_EXTERNAL 1
+// Register block configuration
+#define ${name.upper()}_REG_AW ${reg_aw}
+#define ${name.upper()}_REG_DW ${reg_dw}
 
 // Register offsets and aliases
 % for register in registers:
+% if register.is_array:
+#define ${name.upper()}_${register.name}_COUNT ${register.array_size}
+#define ${name.upper()}_${register.name}_STRIDE 0x${"%x" % register.array_stride}
+#define ${name.upper()}_${register.name}_OFFSET(i) (0x${"%x" % register.offset} + (i) * ${name.upper()}_${register.name}_STRIDE)
+% else:
 #define ${name.upper()}_${register.name}_OFFSET 0x${"%x" % register.offset}
 % for idx, alias in enumerate(register.get('aliases', [])):
 #define ${name.upper()}_${register.name}_ALIAS${idx}_OFFSET 0x${"%x" % alias}
 % endfor
-% endfor
-
-// Memory region definitions
-% for memory in memories:
-#define ${name.upper()}_${memory.name}_OFFSET 0x${"%x" % memory.offset}
-#define ${name.upper()}_${memory.name}_SIZE ${memory.size}
-#define ${name.upper()}_${memory.name}_WIDTH ${memory.width}
+% endif
 % endfor
 
 // Register field masks and shifts
@@ -38,20 +30,22 @@ extern "C" {
 % for field in register.fields:
 #define ${name.upper()}_${register.name}_${field.name}_MASK ${hex((1 << field.width) - 1)}
 #define ${name.upper()}_${register.name}_${field.name}_SHIFT ${field.lsb}
+#define ${name.upper()}_${register.name}_${field.name}_RESET 0x${"%x" % field.reset}
+#define ${name.upper()}_${register.name}_${field.name}_WIDTH ${field.width}
 % endfor
+
+% endfor
+
+// Register access types
+% for register in registers:
+#define ${name.upper()}_${register.name}_ACCESS_TYPE "${register.swaccess}"
+#define ${name.upper()}_${register.name}_HW_ACCESS "${register.hwaccess}"
+#define ${name.upper()}_${register.name}_IS_EXTERNAL ${1 if register.is_external else 0}
 % endfor
 
 // Register access macros
 #define REG_READ32(addr) (*(volatile uint32_t *)(addr))
 #define REG_WRITE32(addr, value) (*(volatile uint32_t *)(addr) = (uint32_t)(value))
-
-// Memory access macros
-#define MEM_READ(addr, width) (*(volatile uint##width##_t *)(addr))
-#define MEM_WRITE(addr, width, value) (*(volatile uint##width##_t *)(addr) = (uint##width##_t)(value))
-
-// Array and memory address calculation
-#define REG_ARRAY_ADDR(base, array_offset, stride, index) ((base) + (array_offset) + ((index) * (stride)))
-#define MEM_ADDR(base, mem_offset, width, index) ((base) + (mem_offset) + ((index) * ((width)/8)))
 
 // Field access macros
 #define GET_FIELD(reg, mask, shift) (((reg) >> (shift)) & (mask))
@@ -60,16 +54,22 @@ extern "C" {
 // Register structure
 typedef struct ${name}_regs {
 % for register in registers:
-% if register.get('is_array', False):
+% if register.is_array:
     volatile uint32_t ${register.name.lower()}[${register.array_size}];  /* ${register.desc} */
 % else:
     volatile uint32_t ${register.name.lower()};  /* ${register.desc} */
 % endif
 % endfor
-% for memory in memories:
-    volatile uint${memory.width}_t ${memory.name.lower()}[${memory.size}];  /* ${memory.desc} */
-% endfor
 } ${name}_regs_t;
+
+// Register reset values
+% for register in registers:
+% if register.is_array:
+#define ${name.upper()}_${register.name}_RESETVALUE(i) 0x${"%x" % register.reset_value}
+% else:
+#define ${name.upper()}_${register.name}_RESETVALUE 0x${"%x" % register.reset_value}
+% endif
+% endfor
 
 #ifdef __cplusplus
 }

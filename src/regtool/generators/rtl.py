@@ -16,6 +16,10 @@ class RTLGenerator(RegisterGenerator):
             if isinstance(reg_copy['offset'], str):
                 reg_copy['offset'] = int(reg_copy['offset'], 16)
             
+            # Process reset values
+            if isinstance(reg_copy['reset_value'], str):
+                reg_copy['reset_value'] = int(reg_copy['reset_value'], 16)
+            
             # Process aliases if present
             if 'aliases' in reg_copy:
                 alias_list = reg_copy['aliases']

@@ -1,3 +1,4 @@
+from pathlib import Path
 import hjson
 from regtool.parser.base import RegisterParser
 
@@ -21,15 +22,16 @@ class HjsonParser(RegisterParser):
                 'offset': reg['offset'],
                 'aliases': reg.get('aliases', []),
                 'swaccess': reg.get('swaccess', 'rw'),
+                'hwaccess': reg.get('hwaccess', 'none'),
                 'is_array': reg.get('is_array', False),
                 'array_size': reg.get('array_size', 1),
                 'array_stride': reg.get('array_stride', 4),
                 'is_external': reg.get('external', False),
+                'reset_value': reg.get('reset', 0),
                 'fields': []
             }
             
             for field in reg['fields']:
-                # Support both bit range and individual bits
                 if 'bits' in field:
                     bits = field['bits'].split(':')
                     msb = int(bits[0])
@@ -44,7 +46,8 @@ class HjsonParser(RegisterParser):
                     'lsb': lsb,
                     'msb': msb,
                     'width': msb - lsb + 1,
-                    'reset': field.get('reset', 0)
+                    'reset': field.get('reset', 0),
+                    'resetsignal': field.get('resetsignal', 'rst_ni')
                 })
                 
             self.registers.append(register)

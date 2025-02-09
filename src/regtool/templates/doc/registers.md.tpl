@@ -4,33 +4,38 @@ ${desc}
 
 ## Register Map
 
-| Offset | Name | Description | Aliases |
-|--------|------|-------------|---------|
+| Offset | Name | Description | Reset Value | Type | Access | HW Access | Aliases |
+|--------|------|-------------|-------------|------|---------|-----------|----------|
 % for register in registers:
-| 0x${"%x" % register.offset} | ${register.name} | ${register.desc} | ${', '.join(['0x%x' % a for a in register.get('aliases', [])])} |
-% endfor
-
-## Memory Regions
-
-| Offset | Name | Size | Width | Description |
-|--------|------|------|-------|-------------|
-% for memory in memories:
-| 0x${"%x" % memory.offset} | ${memory.name} | ${memory.size} | ${memory.width} | ${memory.desc} |
+% if register.is_array:
+| 0x${"%x" % register.offset} + i×0x${"%x" % register.array_stride} | ${register.name}[${register.array_size}] | ${register.desc} | 0x${"%x" % register.reset_value} | Array | ${register.swaccess} | ${register.hwaccess} | ${', '.join(['0x%x' % a for a in register.get('aliases', [])])} |
+% else:
+| 0x${"%x" % register.offset} | ${register.name} | ${register.desc} | 0x${"%x" % register.reset_value} | ${register.is_external and 'External' or 'Internal'} | ${register.swaccess} | ${register.hwaccess} | ${', '.join(['0x%x' % a for a in register.get('aliases', [])])} |
+% endif
 % endfor
 
 ## Register Details
 
 % for register in registers:
-### ${register.name}${"[%d]" % register.array_size if register.get('is_array', False) else ""} (0x${"%x" % register.offset}${"-%x" % (register.offset + (register.array_size - 1) * register.array_stride) if register.get('is_array', False) else ""})
+### ${register.name} ${register.is_array and f'[{register.array_size}]' or ''} (0x${"%x" % register.offset})
 ${register.desc}
-% if register.get('is_array', False):
-Array of ${register.array_size} registers, ${register.array_stride}-byte aligned
+
+Type: ${register.is_external and 'External' or 'Internal'}
+Reset Value: 0x${"%x" % register.reset_value}
+Software Access: ${register.swaccess}
+Hardware Access: ${register.hwaccess}
+% if register.get('aliases', []):
+Aliases: ${', '.join(['0x%x' % a for a in register.aliases])}
+% endif
+% if register.is_array:
+Array Size: ${register.array_size}
+Array Stride: 0x${"%x" % register.array_stride}
 % endif
 
-| Bits | Name | Access | Description |
-|------|------|--------|-------------|
+| Bits | Name | Access | Reset | HW Access | Description |
+|------|------|--------|--------|------------|-------------|
 % for field in register.fields:
-| ${field.msb}${':' + str(field.lsb) if field.msb != field.lsb else ''} | ${field.name} | ${register.swaccess} | ${field.desc} |
+| ${field.msb}${':' + str(field.lsb) if field.msb != field.lsb else ''} | ${field.name} | ${register.swaccess} | 0x${"%x" % field.reset} | ${register.hwaccess} | ${field.desc} |
 % endfor
 
 % endfor
