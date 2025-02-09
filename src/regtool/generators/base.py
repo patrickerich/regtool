@@ -2,12 +2,10 @@ from pathlib import Path
 from regtool.parser.hjson_parser import HjsonParser
 
 class RegisterGenerator:
-    def __init__(self, reg_spec: str, output_dir: Path):
-        self.reg_spec = reg_spec
+    def __init__(self, block_info, registers, output_dir):
+        self.block_info = block_info
+        self.registers = registers
         self.output_dir = output_dir
-        self.parser = HjsonParser(reg_spec)
-        self.registers = self.parser.get_registers()
-        self.block_info = self.parser.get_block_info()
 
     def generate(self):
-        raise NotImplementedError("Subclasses should implement this method.")
+        raise NotImplementedError("Subclasses must implement generate()")

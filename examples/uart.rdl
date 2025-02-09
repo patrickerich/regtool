@@ -1,0 +1,53 @@
+addrmap uart {
+    name = "UART Register Block";
+    desc = "UART peripheral registers";
+    
+    reg {
+        name = "CTRL";
+        desc = "Control Register";
+        field {
+            name = "EN";
+            desc = "UART Enable";
+            sw = rw;
+            hw = r;
+            reset = 0;
+        } en[0:0];
+        
+        field {
+            name = "PARITY";
+            desc = "Parity Enable";
+            sw = rw;
+            hw = r;
+            reset = 0;
+        } parity[1:1];
+    } ctrl @0x00;
+    
+    reg {
+        name = "STATUS";
+        desc = "Status Register";
+        field {
+            name = "TXFULL";
+            desc = "Transmit FIFO Full";
+            sw = r;
+            hw = w;
+        } txfull[0:0];
+        
+        field {
+            name = "RXEMPTY";
+            desc = "Receive FIFO Empty";
+            sw = r;
+            hw = w;
+        } rxempty[1:1];
+    } status @0x04;
+    
+    reg {
+        name = "DATA";
+        desc = "Data Register";
+        field {
+            name = "VALUE";
+            desc = "Data Value";
+            sw = rw;
+            hw = rw;
+        } value[7:0];
+    } data @0x08;
+};

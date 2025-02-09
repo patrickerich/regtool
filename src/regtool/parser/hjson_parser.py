@@ -1,8 +1,8 @@
-
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from pathlib import Path
 import hjson
+from regtool.parser.base import RegisterParser
 from .reg_model import RegisterModel, BitField
 
 @dataclass
@@ -15,22 +15,21 @@ class RegisterSpec:
     hwaccess: str
     fields: List[Dict]
 
-class HjsonParser:
-    def __init__(self, hjson_str: str):
-        self.raw_spec = hjson.loads(hjson_str)
-        self.validate()
+class HjsonParser(RegisterParser):
+    def parse(self):
+        with open(self.input_file, 'r') as f:
+            data = hjson.load(f)
+            
+        self.block_info = {
+            'name': data['name'],
+            'desc': data.get('desc', ''),
+            'reg_aw': data.get('reg_aw', 8),
+            'reg_dw': data.get('reg_dw', 32)
+        }
         
-    def validate(self) -> None:
-        """Validate required fields in register specification"""
-        required = ['name', 'registers']
-        for field in required:
-            if field not in self.raw_spec:
-                raise ValueError(f"Missing required field: {field}")
-                
-        for reg in self.raw_spec['registers']:
-            if not all(k in reg for k in ['name', 'fields']):
-                raise ValueError(f"Invalid register specification: {reg}")
-    
+        self.registers = data['registers']
+        return self.block_info, self.registers
+
     def parse_register(self, reg_dict: Dict) -> RegisterModel:
         """Parse single register definition into RegisterModel"""
         fields = []
@@ -59,14 +58,4 @@ class HjsonParser:
         
     def get_registers(self) -> List[RegisterModel]:
         """Get list of all registers"""
-        return [self.parse_register(reg) for reg in self.raw_spec['registers']]
-        
-    def get_block_info(self) -> Dict:
-        """Get block-level information"""
-        return {
-            'name': self.raw_spec['name'],
-            'version': self.raw_spec.get('version', '1.0.0'),
-            'reg_aw': self.raw_spec.get('reg_aw', 32),
-            'reg_dw': self.raw_spec.get('reg_dw', 32),
-            'desc': self.raw_spec.get('one_line_desc', '')
-        }
+        return [self.parse_register(reg) for reg in self.registers]
