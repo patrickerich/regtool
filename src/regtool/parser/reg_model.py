@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -9,7 +8,7 @@ class BitField:
     msb: int  
     lsb: int
     desc: str
-    reset: Optional[int] = None
+    reset: int = 0  # Default to 0 if not specified
     
     @property
     def width(self) -> int:
@@ -30,6 +29,16 @@ class RegisterModel:
     fields: List[BitField]
     swaccess: str  
     hwaccess: str
+    reset_value: int = 0
+    aliases: List[int] = None
+    is_external: bool = False
+    is_array: bool = False
+    array_size: int = 0
+    array_stride: int = 0
+    
+    def __post_init__(self):
+        if self.aliases is None:
+            self.aliases = []
     
     def get_field_by_name(self, name: str) -> Optional[BitField]:
         """Get field by name"""
@@ -37,6 +46,10 @@ class RegisterModel:
             if field.name == name:
                 return field
         return None
+        
+    def get(self, key, default=None):
+        """Get attribute with fallback"""
+        return getattr(self, key, default)
         
     @property
     def width(self) -> int:

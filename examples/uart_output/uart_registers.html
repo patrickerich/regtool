@@ -6,63 +6,157 @@
         body { font-family: Arial, sans-serif; margin: 40px; }
         table { border-collapse: collapse; width: 100%; margin: 20px 0; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f5f5f5; }
+        th { background-color: #f2f2f2; }
         h1, h2, h3 { color: #333; }
+        .register-details { margin: 20px 0; }
+        .field-table { margin-left: 20px; }
     </style>
 </head>
 <body>
     <h1>UART Register Documentation</h1>
-    <p>Universal Asynchronous Receiver/Transmitter</p>
+    <p>UART peripheral registers</p>
 
     <h2>Register Map</h2>
     <table>
-        <tr><th>Offset</th><th>Name</th><th>Description</th></tr>
+        <tr>
+            <th>Offset</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Reset Value</th>
+            <th>Type</th>
+            <th>Access</th>
+            <th>HW Access</th>
+            <th>Aliases</th>
+        </tr>
         <tr>
             <td>0x0</td>
-            <td>CTRL</td>
+            <td>ctrl</td>
             <td>Control Register</td>
+            <td>0x0</td>
+            <td>Internal</td>
+            <td>rw</td>
+            <td>none</td>
+            <td>-</td>
         </tr>
         <tr>
             <td>0x4</td>
-            <td>STATUS</td>
+            <td>status</td>
             <td>Status Register</td>
+            <td>0x0</td>
+            <td>Internal</td>
+            <td>rw</td>
+            <td>none</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>0x8</td>
+            <td>data</td>
+            <td>Data Register</td>
+            <td>0x0</td>
+            <td>Internal</td>
+            <td>rw</td>
+            <td>none</td>
+            <td>-</td>
         </tr>
     </table>
 
     <h2>Register Details</h2>
-    <h3>CTRL (0x0)</h3>
-    <p>Control Register</p>
-    <table>
-        <tr><th>Bits</th><th>Name</th><th>Access</th><th>Description</th></tr>
-        <tr>
-            <td>0</td>
-            <td>TX_EN</td>
-            <td>rw</td>
-            <td>Transmitter Enable</td>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>RX_EN</td>
-            <td>rw</td>
-            <td>Receiver Enable</td>
-        </tr>
-    </table>
-    <h3>STATUS (0x4)</h3>
-    <p>Status Register</p>
-    <table>
-        <tr><th>Bits</th><th>Name</th><th>Access</th><th>Description</th></tr>
-        <tr>
-            <td>0</td>
-            <td>TX_FULL</td>
-            <td>ro</td>
-            <td>TX FIFO Full</td>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>RX_EMPTY</td>
-            <td>ro</td>
-            <td>RX FIFO Empty</td>
-        </tr>
-    </table>
+    <div class="register-details">
+        <h3>ctrl (0x0)</h3>
+        <p>Control Register</p>
+        <p><strong>Type:</strong> Internal</p>
+        <p><strong>Reset Value:</strong> 0x0</p>
+        <p><strong>Software Access:</strong> rw</p>
+        <p><strong>Hardware Access:</strong> none</p>
+
+        <table class="field-table">
+            <tr>
+                <th>Bits</th>
+                <th>Name</th>
+                <th>Access</th>
+                <th>Reset</th>
+                <th>HW Access</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>en</td>
+                <td>rw</td>
+                <td>0x0</td>
+                <td>none</td>
+                <td>UART Enable</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>parity</td>
+                <td>rw</td>
+                <td>0x0</td>
+                <td>none</td>
+                <td>Parity Enable</td>
+            </tr>
+        </table>
+    </div>
+    <div class="register-details">
+        <h3>status (0x4)</h3>
+        <p>Status Register</p>
+        <p><strong>Type:</strong> Internal</p>
+        <p><strong>Reset Value:</strong> 0x0</p>
+        <p><strong>Software Access:</strong> rw</p>
+        <p><strong>Hardware Access:</strong> none</p>
+
+        <table class="field-table">
+            <tr>
+                <th>Bits</th>
+                <th>Name</th>
+                <th>Access</th>
+                <th>Reset</th>
+                <th>HW Access</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>0</td>
+                <td>txfull</td>
+                <td>rw</td>
+                <td>0x0</td>
+                <td>none</td>
+                <td>Transmit FIFO Full</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>rxempty</td>
+                <td>rw</td>
+                <td>0x0</td>
+                <td>none</td>
+                <td>Receive FIFO Empty</td>
+            </tr>
+        </table>
+    </div>
+    <div class="register-details">
+        <h3>data (0x8)</h3>
+        <p>Data Register</p>
+        <p><strong>Type:</strong> Internal</p>
+        <p><strong>Reset Value:</strong> 0x0</p>
+        <p><strong>Software Access:</strong> rw</p>
+        <p><strong>Hardware Access:</strong> none</p>
+
+        <table class="field-table">
+            <tr>
+                <th>Bits</th>
+                <th>Name</th>
+                <th>Access</th>
+                <th>Reset</th>
+                <th>HW Access</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td>7:0</td>
+                <td>value</td>
+                <td>rw</td>
+                <td>0x0</td>
+                <td>none</td>
+                <td>Data Value</td>
+            </tr>
+        </table>
+    </div>
 </body>
 </html>

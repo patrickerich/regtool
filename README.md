@@ -31,12 +31,22 @@ This project is in an early stage of development. It is very likely that it does
 ### In progress
 The features that are currently being implemented/added:
 1. RDL input
-2. Register array
-3. Register access types
+2. Register array support
+3. Register access types (partial)
 4. Memory regions
-5. External registers
+5. External registers (partial)
 6. Register aliases
 7. Register reset values
+
+### Features Under Construction
+The following features are temporarily disabled while we improve their implementation:
+1. Register arrays
+2. Register aliases
+3. HTML documentation navigation
+4. Advanced HTML styling
+5. Advanced register access types
+6. Memory regions
+7. Full external register support
 
 ## Usage
 To see the available options and usage information, run:
